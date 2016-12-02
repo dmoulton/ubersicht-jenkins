@@ -4,6 +4,7 @@ user                = 'USERNAME'       # your jenkins login username, change it 
 token               = 'TOKEN'          # your jenkins access token, change it if you have auth in jenkins
 serverUrlWithAuth 	= 'jenkins url'			# without http://
 serverUrlNoAuth     = 'jenkins url'			# with http://
+filteredMachines    = [] #array of the full display machine names that will appear ex: ["machine1", "machine2"]
 
 # ------------------------------ END CONFIG --------------------------
 
@@ -16,18 +17,11 @@ command: "curl -sSk -u #{user}:#{token} --globoff \"https://#{serverUrlWithAuth}
 # uncomment when server has no authentication
 # command: "curl -sS @#{serverUrlNoAuth}/api/json?depth=2&tree=jobs[displayName,lastBuild[builOn,duration,timestamp,result]]&exclude=hudson/job[lastBuild[result=%27SUCCESS%27]]"
 
-
-
-# Filter out unwanted machines. Return true if it should be in the output
-filterMachine: (name) ->
-  return true
-  # example: return /^Android-/i.test(name)
-
 refreshFrequency: 60000 # ms
 
 style: """
     top: 20px
-    right: 130px
+    left: 10px
     color: #fff
     font-family: Helvetica Neue
     background-color: rgba(#000, .5)
@@ -171,6 +165,9 @@ convertMilliseconds: (time) ->
 calculateDateDiffToNowUTC: (dateUTC) ->
   return @convertMilliseconds(new Date().getTime() - dateUTC)
 
+# Filter out unwanted machines. Return true if it should be in the output
+filterMachine: (name) ->
+  filteredMachines.indexOf(name) isnt -1
 
 #get's the weather icon
 getIcon: (healthReport) ->
